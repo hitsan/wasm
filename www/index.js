@@ -26,6 +26,7 @@ const js = import("./node_modules/@hitsan/wasm/wasm.js");
 // }
 
 const selectImage = document.getElementById("select")
+const changeImage = document.getElementById("change")
 
 const previewFile = (file) => {
   // プレビュー画像を追加する要素
@@ -35,15 +36,32 @@ const previewFile = (file) => {
   const reader = new FileReader();
 
   // ファイルが読み込まれたときに実行する
-  reader.onload = function (e) {
+  reader.onload = (e) => {
     const imageUrl = e.target.result; // 画像のURLはevent.target.resultで呼び出せる
     const img = document.createElement("img"); // img要素を作成
+    img.id = "img"; 
     img.src = imageUrl; // 画像のURLをimg要素にセット
     preview.appendChild(img); // #previewの中に追加
+    image(imageUrl);
   }
 
   // いざファイルを読み込む
   reader.readAsDataURL(file);
+}
+
+const image = () => {
+  const height = changeImage.naturalWidth ;
+  const width = changeImage.naturalHeight ;
+  const file = changeImage.src;
+  let ans;
+
+  const resp = fetch(file);
+  const blob = resp.blob();
+
+  js.then(js => {
+    ans = js.dump(height, width);
+  });
+  console.log(ans);
 }
 
 const loadImage = () => {
@@ -51,4 +69,5 @@ const loadImage = () => {
   previewFile(files[0]);
 }
 
-selectImage.addEventListener('change', loadImage)
+selectImage.addEventListener('change', loadImage);
+changeImage.addEventListener('click', image);
