@@ -5,9 +5,18 @@
     <title>wasm example</title>
   </head>
   <body>
-    <input type="text" id="num1">
-    <input type="text" id="num2">
-    <input type="button" value="send" id="send">
+      <!-- <div>
+        <input type="text" id="num1">
+        <input type="text" id="num2">
+        <input type="button" value="send" id="send">   
+      </div> -->
+
+      <div>
+          <form>
+            <input type="file" id="select" accept="image/jpeg, image/png" onchange="loadImage(this)">
+          </form>
+        <div id="preview"></div>
+      </div>
     <script src="./index.js"></script>
   </body>
 </html>
