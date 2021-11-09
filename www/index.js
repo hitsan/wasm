@@ -19,17 +19,37 @@ const previewFile = (file) => {
 
 const image = async () => {
   const result = await import("../wasm/pkg/wasm.js");
+  const wasm_bg = await import("../wasm/pkg/wasm_bg.wasm");
 
-  const canvas = document.getElementById("canvas");
-  canvas.width = img.naturalWidth;
-  canvas.height= img.naturalHeight;
+  const img = document.querySelector('img');
+  const canvas = document.createElement('canvas');
+
+  const width = img.clientWidth;
+  const height = img.clientHeight;
+  canvas.width = width;
+  canvas.height= height;
 
   const ctx = canvas.getContext("2d");
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'center';
-  ctx.font = '64px serif';
 
-  let ans = result.dump(height, width);
+  const universe = wasm.Universe.new(width, height);
+  const memory = wasm_bg.memory;
+
+  const wasm_pixels0 = new Uint8Array(memory.buffer, universe.pixels0(), width * height * 4);
+  const wasm_pixels2 = new Uint8ClampedArray(memory.buffer, universe.pixels2(), width * height * 4);
+
+  const renderLoop = () => {
+    ctx.drawImage(video, 0, 0, width, height);
+
+    const img_ = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    wasm_pixels0.set(img_.data);
+    ctx.putImageData(img2, 0, 0);
+
+  };
+
+  let blob = await new Promise(resolve => canvasElem.toBlob(resolve, 'image/png'));
+
+  let ans = result.dump(blob, height, width);
+  console.log(ans)
 }
 
 const loadImage = () => {
