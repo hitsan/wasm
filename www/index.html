@@ -5,21 +5,16 @@
     <title>wasm example</title>
   </head>
   <body>
-      <!-- <div>
-        <input type="text" id="num1">
-        <input type="text" id="num2">
-        <input type="button" value="send" id="send">   
-      </div> -->
-
       <div>
           <form>
-            <input type="file" id="select" accept="image/jpeg, image/png" onchange="loadImage(this)">
+            <input type="file" id="select" accept="image/jpeg, image/png">
           </form>
         <div id="preview"></div>
+        <img id="previewImg"></div>
       </div>
       <div>
         <input type="button" value="change" id="change"> 
-        <div id="after"></div>
+        <canvas id="canvas"></canvas>
       </div>
     <script src="./index.js"></script>
   </body>
