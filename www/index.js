@@ -1,61 +1,30 @@
-const selectImage = document.getElementById("select")
-const changeImage = document.getElementById("change")
-const img = document.getElementById("previewImg");
+const changeImage = document.getElementById("up")
+const img = document.getElementById("img")
 
-const previewFile = (file) => {
-  const preview = document.getElementById('preview');
-  const reader = new FileReader();
+const cimage = async () => {
+  const wasm_bg = await import('../wasm/pkg/wasm_bg.wasm');
+  const wasm = await import('../wasm/pkg/wasm.js');
 
-  reader.onload = (e) => {
-    const imageUrl = e.target.result;
-    // const img = document.createElement("img");
-    img.id = "img"; 
-    img.src = imageUrl;
-    preview.appendChild(img);
-  }
-
-  reader.readAsDataURL(file);
-}
-
-const image = async () => {
-  const result = await import("../wasm/pkg/wasm.js");
-  const wasm_bg = await import("../wasm/pkg/wasm_bg.wasm");
-
-  const img = document.querySelector('img');
-  const canvas = document.createElement('canvas');
-
+  const cvs = document.getElementById("preview");
   const width = img.clientWidth;
   const height = img.clientHeight;
-  canvas.width = width;
-  canvas.height= height;
+  cvs.width = width;
+  cvs.height = height;
+  const ctx = cvs.getContext('2d');
 
-  const ctx = canvas.getContext("2d");
+  let share = wasm.Share.new(width, height);
 
-  const universe = wasm.Universe.new(width, height);
-  const memory = wasm_bg.memory;
+  const mem = wasm_bg.memory;
+  let pre_img = new Uint8ClampedArray(mem.buffer, share.get_pre() , width * height * 4);
+  let post_img = new Uint8ClampedArray(mem.buffer, share.get_post() , width * height * 4);
 
-  const wasm_pixels0 = new Uint8Array(memory.buffer, universe.pixels0(), width * height * 4);
-  const wasm_pixels2 = new Uint8ClampedArray(memory.buffer, universe.pixels2(), width * height * 4);
+  ctx.drawImage(img, 0, 0, width, height);
+  const img_pro = ctx.getImageData(0, 0, width, height);
 
-  const renderLoop = () => {
-    ctx.drawImage(video, 0, 0, width, height);
-
-    const img_ = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    wasm_pixels0.set(img_.data);
-    ctx.putImageData(img2, 0, 0);
-
-  };
-
-  let blob = await new Promise(resolve => canvasElem.toBlob(resolve, 'image/png'));
-
-  let ans = result.dump(blob, height, width);
-  console.log(ans)
+  pre_img.set(img_pro.data);
+  const img2 = new ImageData(post_img, width);
+  share.rev();
+  ctx.putImageData(img2, 0, 0);
 }
 
-const loadImage = () => {
-  const files = selectImage.files;
-  previewFile(files[0]);
-}
-
-selectImage.addEventListener('change', loadImage);
-changeImage.addEventListener('click', image);
+changeImage.addEventListener('click', cimage);

@@ -3,40 +3,37 @@ extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub fn dump(arr: &[u8], h:u32, w:u32) -> u8{
-    return arr[0]
-}
-
-#[wasm_bindgen]
-pub struct Universe {
+pub struct Share {
     width: u32,
     height: u32,
-    pixels0: Vec<u8>,
-    pixels2: Vec<u8>,
+    pre: Vec<u8>,
+    post: Vec<u8>,
 }
 
 #[wasm_bindgen]
-impl Universe {
-    pub fn new(w:u32, h:u32) -> Universe {
-        let width = w;
-        let height = h;
-        let pixels0: Vec<u8> = (0..(w*h*4))
+impl Share {
+    pub fn new(width: u32, height: u32) -> Share {
+        let pre: Vec<u8> = (0..(width*height*4))
             .map(|_| {0})
             .collect();
-
-        let mut pixels2 = pixels0.clone();
-        for y in 0..h {
-            for x in 0..w {
-                let idx: usize = ((y*w+x)*4) as usize;
-                pixels2[idx+3] = 255;
-            }
+        let post = pre.clone();
+        Share {width, height, pre, post}
+    }
+    pub fn get_pre(&self) -> *const u8 {
+        self.pre.as_ptr()
+    }
+    pub fn get_post(&self) -> *const u8 {
+        self.post.as_ptr()
+    }
+    pub fn rev(&mut self) {
+        // self.post = self.pre;
+        let size = (self.width * self.height * 4) as usize;
+        for i in 0..size {
+            self.post[i] = self.pre[i];
         }
-        Universe {width, height, pixels0, pixels2}
-    }
-    pub fn pixels0(&self) -> *const u8 {
-        self.pixels0.as_ptr()
-    }
-    pub fn pixels2(&self) -> *const u8 {
-        self.pixels2.as_ptr()
+
+        let mut later = self.post.split_off(size);
+        self.post.reverse();
+        self.post.append(&mut later);
     }
 }
