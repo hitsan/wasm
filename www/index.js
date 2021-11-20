@@ -1,7 +1,7 @@
 const changeImage = document.getElementById("up")
 const img = document.getElementById("img")
 
-const cimage = async () => {
+const process = async () => {
   const wasm_bg = await import('../wasm/pkg/wasm_bg.wasm');
   const wasm = await import('../wasm/pkg/wasm.js');
 
@@ -22,9 +22,9 @@ const cimage = async () => {
   const img_pro = ctx.getImageData(0, 0, width, height);
 
   pre_img.set(img_pro.data);
-  const img2 = new ImageData(post_img, width);
   share.rev();
+  const img2 = new ImageData(post_img, width);
   ctx.putImageData(img2, 0, 0);
 }
 
-changeImage.addEventListener('click', cimage);
+changeImage.addEventListener('click', process);

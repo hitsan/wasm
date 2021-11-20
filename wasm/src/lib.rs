@@ -26,7 +26,6 @@ impl Share {
         self.post.as_ptr()
     }
     pub fn rev(&mut self) {
-        // self.post = self.pre;
         let size = (self.width * self.height * 4) as usize;
         for i in 0..size {
             self.post[i] = self.pre[i];
